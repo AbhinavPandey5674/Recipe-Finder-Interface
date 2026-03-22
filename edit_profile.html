@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Edit Profile — FlavorFind</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<div id="nav-mount"></div>
+<div class="page-wrap">
+  <div style="max-width:620px;margin:0 auto;padding:3rem 2rem 5rem;" class="anim-fadeup">
+    <a href="profile.html"><button class="btn btn-ghost btn-sm" style="margin-bottom:1.5rem;">← Back to Profile</button></a>
+    <div class="kicker">Your Account</div>
+    <h1 style="font-family:var(--font-display);font-size:2.2rem;font-weight:700;margin-bottom:0.25rem;letter-spacing:-0.02em;">Edit Profile</h1>
+    <p style="color:var(--dust);margin-bottom:2.5rem;">Keep your profile warm and welcoming.</p>
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:2rem;box-shadow:var(--shadow-sm);">
+      <div class="flex-between mb-1"><span style="font-size:0.78rem;font-weight:700;color:var(--dust);text-transform:uppercase;letter-spacing:0.08em;">Profile Completeness</span><span style="font-size:0.85rem;font-weight:700;color:var(--terracotta);" id="pctLbl">72%</span></div>
+      <div class="progress-wrap"><div class="progress-fill" id="pctBar" style="width:72%;"></div></div>
+      <p style="font-size:0.74rem;color:var(--dust);margin-top:0.4rem;">Add bio and website to reach 100%</p>
+    </div>
+    <div class="form-group"><label class="form-label">Display Name *</label><input class="form-input" id="n" value="Abhinav Kumar" oninput="calc()"></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="e" placeholder="you@example.com" oninput="calc()"></div>
+    <div class="form-group"><label class="form-label">Bio</label><textarea class="form-input form-textarea" id="b" oninput="calc()">CSE Student · Food Enthusiast · Home Chef 🌿</textarea></div>
+    <div class="grid-2" style="gap:1rem;">
+      <div class="form-group"><label class="form-label">Location</label><input class="form-input" id="l" value="Prayagraj, India" oninput="calc()"></div>
+      <div class="form-group"><label class="form-label">Website</label><input class="form-input" type="url" id="w" placeholder="https://" oninput="calc()"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="toggle-wrap mb-3" onclick="tc()"><div class="toggle" id="ct"><div class="toggle-thumb"></div></div><div><div class="toggle-lbl">Professional Chef Status</div><div class="toggle-desc">Show a verified chef badge on your profile and recipes.</div></div></div>
+    <div style="display:flex;gap:0.75rem;"><button class="btn btn-terra" onclick="save()">💾 Save Changes</button><a href="profile.html"><button class="btn btn-ghost">Cancel</button></a></div>
+  </div>
+  <div id="footer-mount"></div>
+</div>
+<div id="modals-mount"></div>
+<script src="app.js"></script>
+<script>
+  document.getElementById('nav-mount').innerHTML=renderNavbar('profile');
+  document.getElementById('footer-mount').innerHTML=renderFooter();
+  document.getElementById('modals-mount').innerHTML=authModalsHTML();
+  if(!STATE.isLoggedIn) doLogin('Abhinav'); updateAuthUI();
+  let chefOn=false;
+  function tc(){ chefOn=!chefOn; document.getElementById('ct').classList.toggle('on',chefOn); }
+  function calc(){ const fs=['n','e','b','l','w'], filled=fs.filter(id=>document.getElementById(id).value.trim()).length, p=Math.round(filled/fs.length*100); document.getElementById('pctLbl').textContent=p+'%'; document.getElementById('pctBar').style.width=p+'%'; }
+  function save(){ const n=document.getElementById('n').value.trim(); if(!n){toast('Name is required.','error');return;} STATE.user=n; toast('Profile saved! 🌿','success'); setTimeout(()=>location.href='profile.html',1000); }
+</script>
+</body>
+</html>

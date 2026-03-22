@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Collection — FlavorFind</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<div id="nav-mount"></div>
+<div class="page-wrap">
+  <div id="content"><div class="empty-state"><div class="empty-icon" style="animation:pulse 1.5s infinite;">📚</div><div class="empty-title" style="color:var(--dust);">Loading…</div></div></div>
+  <div id="footer-mount"></div>
+</div>
+<div id="modals-mount"></div>
+<script src="app.js"></script>
+<script>
+  document.getElementById('nav-mount').innerHTML=renderNavbar('collections');
+  document.getElementById('footer-mount').innerHTML=renderFooter();
+  document.getElementById('modals-mount').innerHTML=authModalsHTML();
+  if(!STATE.isLoggedIn) doLogin('Abhinav'); updateAuthUI();
+  const id=parseInt(new URLSearchParams(location.search).get('id'));
+  const col=STATE.userCollections.find(c=>c.id===id);
+  if(!col){ document.getElementById('content').innerHTML=`<div class="empty-state"><div class="empty-icon">😕</div><div class="empty-title">Collection not found</div><a href="collection_list.html"><button class="btn btn-terra">All Collections</button></a></div>`; }
+  else {
+    document.title=col.name+' — FlavorFind';
+    const recs=col.recipeIds.map(rid=>STATE.recipes.find(r=>r.id===rid)).filter(Boolean);
+    document.getElementById('content').innerHTML=`
+    <div style="background:${col.bg};padding:4rem 2rem 3rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);"></div>
+      <div style="max-width:900px;margin:0 auto;position:relative;z-index:1;">
+        <a href="collection_list.html"><button class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.25);border-radius:var(--radius-sm);margin-bottom:1.5rem;">← Collections</button></a>
+        <div style="font-size:3rem;margin-bottom:1rem;">${col.icon}</div>
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+          <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:700;color:white;letter-spacing:-0.02em;">${col.name}</h1>
+          ${!col.isPublic?'<span style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);padding:0.2rem 0.65rem;border-radius:99px;font-size:0.72rem;font-weight:600;">🔒 Private</span>':''}
+        </div>
+        <p style="color:rgba(255,255,255,0.75);font-size:0.95rem;">${col.desc}</p>
+        <div style="margin-top:0.75rem;font-size:0.82rem;color:rgba(255,255,255,0.6);">📖 ${recs.length} recipe${recs.length!==1?'s':''}</div>
+      </div>
+    </div>
+    <section class="section" style="padding-top:3rem;">
+      <div class="container" style="max-width:1100px;">
+        ${recs.length?`<div class="grid-3">${recs.map(r=>recipeCardHTML(r,true)).join('')}</div>`:`<div class="empty-state"><div class="empty-icon">🍳</div><div class="empty-title">No recipes yet</div><p class="empty-text">Browse and add recipes to this collection.</p><a href="recipe_list.html"><button class="btn btn-terra">Browse Recipes</button></a></div>`}
+      </div>
+    </section>`;
+    window.removeFromCol=function(rid){ col.recipeIds=col.recipeIds.filter(x=>x!==rid); toast('Removed from collection.','info'); setTimeout(()=>location.reload(),700); };
+  }
+</script>
+</body>
+</html>

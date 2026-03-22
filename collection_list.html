@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Collections — FlavorFind</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<div id="nav-mount"></div>
+<div class="page-wrap">
+  <section class="section">
+    <div class="container">
+      <div class="flex-between mb-4" style="flex-wrap:wrap;gap:1rem;">
+        <div><div class="kicker">Your Library</div><h1 class="section-title" style="font-size:2.5rem;">Collections</h1><p class="section-sub">Organise recipes into curated, shareable collections.</p></div>
+        <button class="btn btn-terra" onclick="openModal('colM')">+ New Collection</button>
+      </div>
+      <div class="grid-3" id="cGrid"></div>
+      <div class="empty-state" id="cEmpty" style="display:none;"><div class="empty-icon">📚</div><div class="empty-title">No collections yet</div><p class="empty-text">Create your first collection.</p><button class="btn btn-terra" onclick="openModal('colM')">+ Create Collection</button></div>
+    </div>
+  </section>
+  <div id="footer-mount"></div>
+</div>
+
+<div class="modal-overlay" id="colM">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('colM')">✕</button>
+    <div class="modal-header"><h2 style="font-family:var(--font-display);font-size:1.5rem;" id="colMTitle">New Collection</h2></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Name *</label><input class="form-input" id="cN" placeholder="e.g. Weekend Brunch Ideas"></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-input form-textarea" id="cD" placeholder="What's this collection about?" style="min-height:80px;"></textarea></div>
+      <div class="form-group"><label class="form-label">Privacy</label><select class="form-input form-select" id="cP"><option value="true">🌍 Public</option><option value="false">🔒 Private</option></select></div>
+      <div id="cErr" style="color:#C04040;font-size:0.82rem;margin-bottom:0.75rem;display:none;"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('colM')">Cancel</button><button class="btn btn-terra" onclick="saveCol()">💾 Save</button></div>
+  </div>
+</div>
+
+<div id="modals-mount"></div>
+<script src="app.js"></script>
+<script>
+  document.getElementById('nav-mount').innerHTML=renderNavbar('collections');
+  document.getElementById('footer-mount').innerHTML=renderFooter();
+  document.getElementById('modals-mount').innerHTML=authModalsHTML();
+  if(!STATE.isLoggedIn) doLogin('Abhinav'); updateAuthUI();
+  let editId=null;
+
+  function editCollection(id){
+    const c=STATE.userCollections.find(x=>x.id===id); if(!c) return;
+    editId=id; document.getElementById('cN').value=c.name; document.getElementById('cD').value=c.desc;
+    document.getElementById('cP').value=c.isPublic?'true':'false';
+    document.getElementById('colMTitle').textContent='Edit Collection'; openModal('colM');
+  }
+  function saveCol(){
+    const name=document.getElementById('cN').value.trim(), err=document.getElementById('cErr');
+    if(!name){err.textContent='Name is required.';err.style.display='block';return;} err.style.display='none';
+    const desc=document.getElementById('cD').value.trim(), pub=document.getElementById('cP').value==='true';
+    const bgs=['linear-gradient(135deg,#8B4513,#C2622D)','linear-gradient(135deg,#2C4A2E,#4E7A4C)','linear-gradient(135deg,#5C3D2E,#8B6355)','linear-gradient(135deg,#3A3A6A,#5A5A9A)'];
+    const icons=['🍕','🌮','🍜','🥘','🫕','🥗','🍱','🧁'];
+    if(editId){ const c=STATE.userCollections.find(x=>x.id===editId); if(c){c.name=name;c.desc=desc;c.isPublic=pub;} toast('Collection updated!','success'); }
+    else { STATE.userCollections.push({id:Date.now(),name,desc,isPublic:pub,icon:icons[Math.floor(Math.random()*icons.length)],bg:bgs[Math.floor(Math.random()*bgs.length)],recipeIds:[]}); toast('Collection created! 🌿','success'); }
+    editId=null; document.getElementById('cN').value=''; document.getElementById('cD').value='';
+    document.getElementById('colMTitle').textContent='New Collection'; closeModal('colM'); render();
+  }
+  function render(){
+    const cols=STATE.userCollections, grid=document.getElementById('cGrid'), empty=document.getElementById('cEmpty');
+    if(!cols.length){grid.innerHTML='';empty.style.display='block';return;}
+    empty.style.display='none'; grid.innerHTML=cols.map(c=>colCardHTML(c)).join('');
+  }
+  render();
+</script>
+</body>
+</html>

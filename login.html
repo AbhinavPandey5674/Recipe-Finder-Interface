@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Sign In — FlavorFind</title><link rel="stylesheet" href="style.css">
+<style>
+.auth-page { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; }
+.auth-panel { display:flex; flex-direction:column; justify-content:center; align-items:center; padding:3rem 2.5rem; background:var(--parchment); }
+.auth-visual { position:relative; overflow:hidden; background:var(--forest); }
+.auth-visual img { width:100%; height:100%; object-fit:cover; opacity:0.4; }
+.auth-visual-overlay { position:absolute; inset:0; background:linear-gradient(160deg,rgba(44,24,16,0.5),rgba(58,92,56,0.6)); display:flex; flex-direction:column; justify-content:flex-end; padding:3rem; }
+.auth-card { width:100%; max-width:400px; }
+@media(max-width:768px){ .auth-page{grid-template-columns:1fr} .auth-visual{display:none} }
+</style>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-visual">
+    <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=700&q=80" alt="">
+    <div class="auth-visual-overlay">
+      <div style="font-family:var(--font-script);font-size:2rem;color:white;margin-bottom:0.5rem;">🌿 FlavorFind</div>
+      <p style="color:rgba(255,255,255,0.65);font-size:0.95rem;line-height:1.7;max-width:280px;">Join 50,000 food lovers discovering extraordinary recipes every day.</p>
+      <div style="display:flex;gap:1.5rem;margin-top:1.5rem;">
+        <div><div style="font-family:var(--font-display);font-size:1.5rem;color:var(--terra-light);font-weight:700;">1,400+</div><div style="font-size:0.7rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;">Recipes</div></div>
+        <div><div style="font-family:var(--font-display);font-size:1.5rem;color:var(--terra-light);font-weight:700;">22</div><div style="font-size:0.7rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;">Cuisines</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="auth-panel">
+    <div class="auth-card anim-fadeup">
+      <a href="home.html" style="display:flex;align-items:center;gap:8px;margin-bottom:2.5rem;">
+        <div class="nav-logo-leaf" style="width:30px;height:30px;font-size:15px;">🌿</div>
+        <span style="font-family:var(--font-script);font-size:1.5rem;color:var(--terracotta);">FlavorFind</span>
+      </a>
+      <div style="margin-bottom:2rem;"><h1 style="font-family:var(--font-display);font-size:2rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:0.25rem;">Welcome back</h1><p style="color:var(--dust);font-size:0.9rem;">Sign in to your account to continue.</p></div>
+      <div class="form-group"><label class="form-label">Username</label><input class="form-input" id="u" placeholder="your username" autofocus></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="p" placeholder="••••••••"></div>
+      <div class="flex-between mb-3" style="font-size:0.82rem;"><label style="display:flex;align-items:center;gap:0.4rem;color:var(--dust);cursor:pointer;"><input type="checkbox"> Remember me</label><a style="color:var(--terracotta);cursor:pointer;">Forgot password?</a></div>
+      <div id="err" style="color:#C04040;font-size:0.82rem;margin-bottom:0.75rem;display:none;"></div>
+      <button class="btn btn-terra btn-full" onclick="go()" style="margin-bottom:0.6rem;">Sign In</button>
+      <button class="btn btn-ghost btn-full" onclick="demo()" style="margin-bottom:1.5rem;">🌿 Demo — instant access</button>
+      <p style="text-align:center;font-size:0.83rem;color:var(--dust);">No account? <a href="register.html" style="color:var(--terracotta);font-weight:600;">Join free</a></p>
+    </div>
+  </div>
+</div>
+<div id="toast-container"></div>
+<script src="app.js"></script>
+<script>
+  function go(){ const u=document.getElementById('u').value.trim(),p=document.getElementById('p').value,err=document.getElementById('err'); if(!u||!p){err.textContent='Please enter username and password.';err.style.display='block';return;} err.style.display='none'; toast('Signing in… 🌿','success'); setTimeout(()=>location.href='home.html',1100); }
+  function demo(){ toast('Welcome to FlavorFind! 🌿','success'); setTimeout(()=>location.href='home.html',1000); }
+  document.getElementById('p').addEventListener('keydown',e=>{if(e.key==='Enter') go();});
+</script>
+</body>
+</html>

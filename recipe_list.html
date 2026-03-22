@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Recipes — FlavorFind</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="nav-mount"></div>
+<div class="page-wrap">
+  <section class="section">
+    <div class="container">
+      <div class="anim-fadeup" style="margin-bottom:2.5rem;">
+        <div class="kicker">Browse All</div>
+        <h1 class="section-title" id="pageTitle" style="font-size:2.6rem;">All Recipes</h1>
+        <p class="section-sub" id="pageSub">Find something wonderful to cook today.</p>
+      </div>
+
+      <div class="search-bar mb-3 anim-fadeup d1">
+        <input type="text" id="sInput" placeholder="Search by name, ingredient, cuisine, chef..." oninput="doFilter()">
+        <button onclick="doFilter()">Search</button>
+      </div>
+
+      <div class="filter-bar anim-fadeup d2">
+        <span class="filter-lbl">Filter by:</span>
+        <select id="fCat" onchange="doFilter()">
+          <option value="">All Categories</option>
+          <option>Breakfast</option><option>Lunch</option><option>Dinner</option>
+          <option>Dessert</option><option>Snacks</option><option>Drinks</option>
+          <option>Vegetarian</option><option>Seafood</option>
+        </select>
+        <select id="fDiff" onchange="doFilter()">
+          <option value="">Any Difficulty</option>
+          <option>Easy</option><option>Medium</option><option>Hard</option>
+        </select>
+        <select id="fTime" onchange="doFilter()">
+          <option value="">Any Time</option>
+          <option value="15">Under 15 min</option>
+          <option value="30">Under 30 min</option>
+          <option value="60">Under 60 min</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="clearAll()">✕ Clear</button>
+        <span data-auth="yes" style="display:none;margin-left:auto;">
+          <a href="recipe_form.html"><button class="btn btn-terra btn-sm">+ Create Recipe</button></a>
+        </span>
+      </div>
+
+      <div class="flex-between mb-3" style="flex-wrap:wrap;gap:0.5rem;">
+        <div id="resultInfo" style="font-size:0.82rem;color:var(--dust);"></div>
+      </div>
+
+      <div class="grid-3" id="recipesGrid"></div>
+
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="empty-icon">🌾</div>
+        <div class="empty-title">No recipes found</div>
+        <p class="empty-text">Try different search terms or clear the filters.</p>
+        <button class="btn btn-terra" onclick="clearAll()">Clear Filters</button>
+      </div>
+
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </section>
+  <div id="footer-mount"></div>
+</div>
+<div id="modals-mount"></div>
+<script src="app.js"></script>
+<script>
+  document.getElementById('nav-mount').innerHTML    = renderNavbar('recipes');
+  document.getElementById('footer-mount').innerHTML = renderFooter();
+  document.getElementById('modals-mount').innerHTML = authModalsHTML();
+  updateAuthUI();
+
+  const PER=6; let pg=1, filtered=[...STATE.recipes];
+  const params=new URLSearchParams(location.search);
+  if(params.get('q')){ document.getElementById('sInput').value=params.get('q'); }
+  if(params.get('cat')){
+    document.getElementById('fCat').value=params.get('cat');
+    document.getElementById('pageTitle').textContent=params.get('cat')+' Recipes';
+  }
+
+  function doFilter(){
+    const q=document.getElementById('sInput').value.toLowerCase();
+    const cat=document.getElementById('fCat').value;
+    const diff=document.getElementById('fDiff').value;
+    const time=parseInt(document.getElementById('fTime').value)||0;
+    filtered=STATE.recipes.filter(r=>{
+      const mQ=!q||r.title.toLowerCase().includes(q)||r.category.toLowerCase().includes(q)||r.author.toLowerCase().includes(q)||r.description.toLowerCase().includes(q);
+      return mQ&&(!cat||r.category===cat)&&(!diff||r.difficulty===diff)&&(!time||r.time<=time);
+    });
+    pg=1; render();
+  }
+  function clearAll(){
+    ['sInput'].forEach(id=>document.getElementById(id).value='');
+    ['fCat','fDiff','fTime'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pageTitle').textContent='All Recipes';
+    doFilter();
+  }
+  function render(){
+    const grid=document.getElementById('recipesGrid'), empty=document.getElementById('emptyState'), info=document.getElementById('resultInfo'), pag=document.getElementById('pagination');
+    const total=filtered.length;
+    if(!total){ grid.innerHTML=''; empty.style.display='block'; pag.innerHTML=''; info.textContent=''; return; }
+    empty.style.display='none';
+    const start=(pg-1)*PER;
+    grid.innerHTML=filtered.slice(start,start+PER).map(r=>recipeCardHTML(r)).join('');
+    info.textContent=`Showing ${start+1}–${Math.min(start+PER,total)} of ${total} recipe${total!==1?'s':''}`;
+    const pages=Math.ceil(total/PER);
+    pag.innerHTML=pages>1?Array.from({length:pages},(_,i)=>`<div class="page-btn ${i+1===pg?'active':''}" onclick="goPage(${i+1})">${i+1}</div>`).join(''):'';
+  }
+  function goPage(n){ pg=n; render(); scrollTo({top:0,behavior:'smooth'}); }
+  doFilter();
+</script>
+</body>
+</html>

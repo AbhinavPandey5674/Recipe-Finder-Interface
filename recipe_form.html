@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Create Recipe — FlavorFind</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.form-wrap { max-width:680px; margin:0 auto; padding:3rem 2rem 5rem; }
+.step-panel { display:none; animation:fadeIn 0.3s ease; }
+.step-panel.active { display:block; }
+.img-drop {
+  border:2px dashed var(--border); border-radius:var(--radius);
+  padding:2.5rem; text-align:center; cursor:pointer;
+  background:var(--cream); transition:all 0.2s;
+}
+.img-drop:hover { border-color:var(--terracotta); background:var(--linen); }
+.img-preview { border-radius:var(--radius); overflow:hidden; aspect-ratio:16/9; margin-bottom:1rem; border:1px solid var(--border); display:none; }
+.img-preview img { width:100%;height:100%;object-fit:cover; }
+</style>
+</head>
+<body>
+<div id="nav-mount"></div>
+<div class="page-wrap">
+  <div class="form-wrap anim-fadeup">
+    <a href="recipe_list.html"><button class="btn btn-ghost btn-sm" style="margin-bottom:1.5rem;">← Back</button></a>
+    <div class="kicker">Share Your Recipe</div>
+    <h1 style="font-family:var(--font-display);font-size:2.2rem;font-weight:700;margin-bottom:0.3rem;letter-spacing:-0.02em;">Create a Recipe</h1>
+    <p style="color:var(--dust);margin-bottom:2.5rem;">Share your culinary creativity with FlavorFind community.</p>
+
+    <div class="wizard">
+      <div class="wizard-step active" id="ws1"><div class="wizard-num">1</div><div class="wizard-lbl">Basics</div></div>
+      <div class="wizard-line" id="wl12"></div>
+      <div class="wizard-step" id="ws2"><div class="wizard-num">2</div><div class="wizard-lbl">Ingredients</div></div>
+      <div class="wizard-line" id="wl23"></div>
+      <div class="wizard-step" id="ws3"><div class="wizard-num">3</div><div class="wizard-lbl">Media</div></div>
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="step-panel active" id="sp1">
+      <div class="form-group"><label class="form-label">Recipe Title *</label><input class="form-input" id="t1" placeholder="e.g. Creamy Butter Chicken"></div>
+      <div class="form-group"><label class="form-label">Description *</label><textarea class="form-input form-textarea" id="t2" placeholder="Tell the story of this dish — what makes it special?"></textarea></div>
+      <div class="grid-2" style="gap:1rem;">
+        <div class="form-group"><label class="form-label">Cook Time (min)</label><input class="form-input" type="number" id="t3" min="1" placeholder="45"></div>
+        <div class="form-group"><label class="form-label">Servings</label><input class="form-input" type="number" id="t4" min="1" placeholder="4"></div>
+      </div>
+      <div class="grid-2" style="gap:1rem;">
+        <div class="form-group"><label class="form-label">Category</label>
+          <select class="form-input form-select" id="t5">
+            <option>Breakfast</option><option>Lunch</option><option selected>Dinner</option>
+            <option>Dessert</option><option>Snacks</option><option>Drinks</option><option>Vegetarian</option><option>Seafood</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Difficulty</label>
+          <select class="form-input form-select" id="t6"><option>Easy</option><option selected>Medium</option><option>Hard</option></select>
+        </div>
+      </div>
+      <div style="text-align:right;"><button class="btn btn-terra" onclick="next(1)">Next: Ingredients →</button></div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-panel" id="sp2">
+      <div class="form-group">
+        <label class="form-label">Ingredients *</label>
+        <div id="ingList" style="margin-bottom:0.75rem;"></div>
+        <button class="btn btn-ghost btn-sm" onclick="addIng()">+ Add Ingredient</button>
+      </div>
+      <div class="divider"></div>
+      <div class="form-group">
+        <label class="form-label">Instructions *</label>
+        <div id="insList" style="margin-bottom:0.75rem;"></div>
+        <button class="btn btn-ghost btn-sm" onclick="addIns()">+ Add Step</button>
+      </div>
+      <div class="flex-between mt-3"><button class="btn btn-ghost" onclick="prev(2)">← Back</button><button class="btn btn-terra" onclick="next(2)">Next: Media →</button></div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-panel" id="sp3">
+      <div class="form-group">
+        <label class="form-label">Image URL</label>
+        <input class="form-input" type="url" id="t7" placeholder="https://images.unsplash.com/..." oninput="prevImg()">
+        <p class="form-hint">Paste a direct image URL — Unsplash works great.</p>
+      </div>
+      <div class="img-preview" id="prevWrap"><img id="prevImg" src="" alt="Preview"></div>
+      <div class="img-drop" onclick="document.getElementById('fFile').click()">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">📷</div>
+        <div style="font-weight:600;color:var(--bark);margin-bottom:0.25rem;">Or upload a photo</div>
+        <div style="font-size:0.8rem;color:var(--dust);">PNG, JPG, WEBP — drag & drop or click to browse</div>
+        <input type="file" id="fFile" accept="image/*" style="display:none;" onchange="handleFile(event)">
+      </div>
+      <div class="divider"></div>
+      <div class="toggle-wrap mt-2" onclick="toggleChef()">
+        <div class="toggle" id="chefT"><div class="toggle-thumb"></div></div>
+        <div><div class="toggle-lbl">Mark as Professional Chef Recipe</div><div class="toggle-desc">Adds a verified chef badge to your published recipe.</div></div>
+      </div>
+      <div class="flex-between mt-3">
+        <button class="btn btn-ghost" onclick="prev(3)">← Back</button>
+        <button class="btn btn-terra" onclick="publish()">🌿 Publish Recipe</button>
+      </div>
+    </div>
+  </div>
+  <div id="footer-mount"></div>
+</div>
+<div id="modals-mount"></div>
+<script src="app.js"></script>
+<script>
+  document.getElementById('nav-mount').innerHTML    = renderNavbar('');
+  document.getElementById('footer-mount').innerHTML = renderFooter();
+  document.getElementById('modals-mount').innerHTML = authModalsHTML();
+  updateAuthUI();
+
+  let ingN=0,insN=0,chefOn=false;
+  function init(){ ingN=0;insN=0;document.getElementById('ingList').innerHTML='';document.getElementById('insList').innerHTML=''; for(let i=0;i<3;i++) addIng(); for(let i=0;i<3;i++) addIns(); }
+  init();
+
+  function addIng(){
+    ingN++;
+    const d=document.createElement('div'); d.className='ing-form-row'; d.id='ir'+ingN;
+    d.innerHTML=`<input class="form-input" placeholder="Qty"><input class="form-input" placeholder="Ingredient name"><div class="rm-btn" onclick="document.getElementById('ir${ingN}').remove()">✕</div>`;
+    document.getElementById('ingList').appendChild(d);
+  }
+  function addIns(){
+    insN++;
+    const n=insN, d=document.createElement('div'); d.id='is'+n; d.style.cssText='display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:flex-start;';
+    d.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:var(--terra-dim);border:1.5px solid var(--border-warm);color:var(--terracotta);font-weight:800;font-size:0.78rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:0.65rem;">${n}</div><textarea class="form-input form-textarea" style="min-height:70px;flex:1;" placeholder="Describe step ${n}…"></textarea><div class="rm-btn" onclick="document.getElementById('is${n}').remove()" style="margin-top:0.5rem;">✕</div>`;
+    document.getElementById('insList').appendChild(d);
+  }
+  function setStep(s){
+    for(let i=1;i<=3;i++){
+      document.getElementById('sp'+i).className='step-panel'+(i===s?' active':'');
+      const ws=document.getElementById('ws'+i);
+      ws.className='wizard-step'+(i<s?' done':i===s?' active':'');
+      if(i<3) document.getElementById('wl'+i+(i+1)).className='wizard-line'+(i<s?' done':'');
+    }
+  }
+  function next(s){ if(s===1&&!document.getElementById('t1').value.trim()){toast('Please enter a title.','error');return;} setStep(s+1); }
+  function prev(s){ setStep(s-1); }
+  function prevImg(){ const u=document.getElementById('t7').value; if(u){document.getElementById('prevImg').src=u;document.getElementById('prevWrap').style.display='block';} }
+  function handleFile(e){ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{document.getElementById('prevImg').src=ev.target.result;document.getElementById('prevWrap').style.display='block';}; r.readAsDataURL(f); }
+  function toggleChef(){ chefOn=!chefOn; document.getElementById('chefT').classList.toggle('on',chefOn); }
+  function publish(){
+    if(!STATE.isLoggedIn){openModal('loginModal');return;}
+    const title=document.getElementById('t1').value.trim();
+    if(!title){toast('Title required.','error');setStep(1);return;}
+    STATE.recipes.unshift({id:Date.now(),title,description:document.getElementById('t2').value.trim()||'A wonderful recipe.',category:document.getElementById('t5').value,difficulty:document.getElementById('t6').value,time:parseInt(document.getElementById('t3').value)||30,servings:parseInt(document.getElementById('t4').value)||4,likes:0,comments:0,chef:chefOn,author:STATE.user||'You',image:document.getElementById('t7').value||'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=700&q=80',tags:[document.getElementById('t5').value],ingredients:[{qty:'',name:'See description'}],instructions:['Follow the recipe.']});
+    STATE.userRecipes.unshift(STATE.recipes[0]);
+    toast('Recipe published! 🌿','success');
+    setTimeout(()=>location.href='recipe_list.html',1200);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Category — FlavorFind</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<div id="nav-mount"></div>
+<div class="page-wrap">
+  <section class="section" style="padding-bottom:1rem;">
+    <div class="container">
+      <a href="recipe_list.html"><button class="btn btn-ghost btn-sm" style="margin-bottom:1.5rem;">← All Recipes</button></a>
+      <div id="catHdr" style="margin-bottom:2.5rem;"></div>
+    </div>
+  </section>
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="grid-3" id="catGrid"></div>
+      <div class="empty-state" id="catEmpty" style="display:none;"><div class="empty-icon">🌾</div><div class="empty-title">No recipes in this category</div><p class="empty-text">Be the first to add one!</p><a href="recipe_form.html"><button class="btn btn-terra">+ Create Recipe</button></a></div>
+      <div class="pagination" id="catPag"></div>
+    </div>
+  </section>
+  <div id="footer-mount"></div>
+</div>
+<div id="modals-mount"></div>
+<script src="app.js"></script>
+<script>
+  document.getElementById('nav-mount').innerHTML=renderNavbar('recipes');
+  document.getElementById('footer-mount').innerHTML=renderFooter();
+  document.getElementById('modals-mount').innerHTML=authModalsHTML();
+  updateAuthUI();
+  const ICONS={Breakfast:'🥞',Lunch:'🥗',Dinner:'🍝',Dessert:'🍰',Snacks:'🥜',Drinks:'🍵',Vegetarian:'🥦',Seafood:'🦐'};
+  const cat=new URLSearchParams(location.search).get('cat')||'Dinner';
+  document.title=cat+' Recipes — FlavorFind';
+  const recs=STATE.recipes.filter(r=>r.category===cat);
+  document.getElementById('catHdr').innerHTML=`<div class="kicker">${ICONS[cat]||'🍽'} ${cat}</div><h1 class="section-title" style="font-size:2.5rem;">${cat} Recipes</h1><p class="section-sub">${recs.length} recipe${recs.length!==1?'s':''} in this category.</p>`;
+  const PER=6; let pg=1;
+  function render(){ if(!recs.length){document.getElementById('catEmpty').style.display='block';return;} const start=(pg-1)*PER; document.getElementById('catGrid').innerHTML=recs.slice(start,start+PER).map(r=>recipeCardHTML(r)).join(''); const pages=Math.ceil(recs.length/PER); document.getElementById('catPag').innerHTML=pages>1?Array.from({length:pages},(_,i)=>`<div class="page-btn ${i+1===pg?'active':''}" onclick="gp(${i+1})">${i+1}</div>`).join(''):''; }
+  function gp(n){pg=n;render();scrollTo({top:0,behavior:'smooth'});}
+  render();
+</script>
+</body>
+</html>

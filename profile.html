@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Profile — FlavorFind</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="nav-mount"></div>
+<div class="page-wrap">
+  <div class="profile-banner">
+    <div style="max-width:800px;margin:0 auto;text-align:center;position:relative;z-index:1;">
+      <div class="profile-avatar" id="pAvatar">A</div>
+      <h1 class="profile-name" id="pName">Abhinav Kumar</h1>
+      <p class="profile-bio" id="pBio">CSE Student · Food Enthusiast · Home Chef 🌿</p>
+      <p style="color:rgba(255,255,255,0.55);font-size:0.8rem;margin-top:0.4rem;margin-bottom:1.5rem;">📍 Prayagraj, India</p>
+      <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+        <a href="edit_profile.html"><button class="btn btn-ghost">✎ Edit Profile</button></a>
+        <a href="recipe_form.html" data-auth="yes" style="display:none;"><button class="btn btn-terra">+ Create Recipe</button></a>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--cream);border-bottom:1px solid var(--border);padding:2rem;">
+    <div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
+      <div class="stat-card"><div class="stat-num" id="sR">0</div><div class="stat-lbl">Recipes</div></div>
+      <div class="stat-card"><div class="stat-num" id="sC">3</div><div class="stat-lbl">Collections</div></div>
+      <div class="stat-card"><div class="stat-num" id="sL">0</div><div class="stat-lbl">Total Likes</div></div>
+      <div class="stat-card"><div class="stat-num">142</div><div class="stat-lbl">Followers</div></div>
+    </div>
+  </div>
+
+  <section class="section" style="padding-top:2.5rem;">
+    <div style="max-width:1100px;margin:0 auto;padding:0 2rem;">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="swTab('tabR',this)">My Recipes</button>
+        <button class="tab-btn" onclick="swTab('tabC',this)">My Collections</button>
+      </div>
+      <div class="tab-panel active" id="tabR">
+        <div class="grid-3" id="rGrid"></div>
+        <div class="empty-state" id="rEmpty" style="display:none;"><div class="empty-icon">🍳</div><div class="empty-title">No recipes yet</div><p class="empty-text">Share your first recipe!</p><a href="recipe_form.html"><button class="btn btn-terra">+ Create Recipe</button></a></div>
+      </div>
+      <div class="tab-panel" id="tabC">
+        <div class="grid-3" id="cGrid"></div>
+        <div class="empty-state" id="cEmpty" style="display:none;"><div class="empty-icon">📚</div><div class="empty-title">No collections yet</div><p class="empty-text">Organise your favourite recipes.</p><a href="collection_list.html"><button class="btn btn-terra">Browse & Collect</button></a></div>
+      </div>
+    </div>
+  </section>
+  <div id="footer-mount"></div>
+</div>
+<div id="modals-mount"></div>
+<script src="app.js"></script>
+<script>
+  document.getElementById('nav-mount').innerHTML    = renderNavbar('profile');
+  document.getElementById('footer-mount').innerHTML = renderFooter();
+  document.getElementById('modals-mount').innerHTML = authModalsHTML();
+  if(!STATE.isLoggedIn) doLogin('Abhinav');
+  updateAuthUI();
+
+  function editCollection(id){ location.href='collection_list.html'; }
+
+  function render(){
+    const n=STATE.user||'Abhinav';
+    document.getElementById('pAvatar').textContent=n[0].toUpperCase();
+    document.getElementById('pName').textContent=n;
+    document.querySelectorAll('.nav-initial').forEach(el=>el.textContent=n[0].toUpperCase());
+    const myR=STATE.userRecipes, myC=STATE.userCollections;
+    document.getElementById('sR').textContent=myR.length;
+    document.getElementById('sL').textContent=myR.reduce((s,r)=>s+r.likes,0);
+    document.getElementById('sC').textContent=myC.length;
+    if(myR.length){ document.getElementById('rGrid').innerHTML=myR.map(r=>recipeCardHTML(r)).join(''); document.getElementById('rEmpty').style.display='none'; }
+    else { document.getElementById('rGrid').innerHTML=''; document.getElementById('rEmpty').style.display='block'; }
+    if(myC.length){ document.getElementById('cGrid').innerHTML=myC.map(c=>colCardHTML(c)).join(''); document.getElementById('cEmpty').style.display='none'; }
+    else { document.getElementById('cGrid').innerHTML=''; document.getElementById('cEmpty').style.display='block'; }
+  }
+  function swTab(id,btn){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active'); document.getElementById(id).classList.add('active');
+  }
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FlavorFind — Discover Recipes You'll Love</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.hero {
+  min-height: calc(100vh - var(--nav-h));
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center; gap: 4rem;
+  max-width: 1260px; margin: 0 auto;
+  padding: 5rem 2rem;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--terra-dim); border: 1px solid var(--border-warm);
+  padding: 0.3rem 1rem; border-radius: 99px;
+  font-size: 0.75rem; font-weight: 700;
+  color: var(--terracotta); text-transform: uppercase;
+  letter-spacing: 0.1em; margin-bottom: 1.25rem;
+}
+.hero-h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5vw, 4.5rem);
+  font-weight: 700; line-height: 1.08;
+  letter-spacing: -0.03em; color: var(--espresso);
+  margin-bottom: 1.25rem;
+}
+.hero-h1 em { color: var(--terracotta); font-style: italic; }
+.hero-sub { font-size: 1.05rem; color: var(--walnut); line-height: 1.75; max-width: 420px; margin-bottom: 2.5rem; }
+.hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
+.hero-nums {
+  display: flex; gap: 2rem; flex-wrap: wrap;
+  padding-top: 2rem; border-top: 1px solid var(--border);
+}
+.hero-num-val { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--terracotta); line-height: 1; }
+.hero-num-lbl { font-size: 0.72rem; font-weight: 700; color: var(--dust); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.15rem; }
+ 
+.hero-visual { position: relative; }
+.hero-img-frame {
+  border-radius: var(--radius-xl);
+  overflow: hidden; aspect-ratio: 3/4;
+  max-height: 560px;
+  border: 2px solid var(--border);
+  box-shadow: 0 24px 60px rgba(44,24,16,0.18);
+  position: relative;
+}
+.hero-img-frame img { width: 100%; height: 100%; object-fit: cover; }
+.hero-img-frame::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 60%, rgba(44,24,16,0.25));
+}
+.float-tag {
+  position: absolute; background: white;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 0.85rem 1.1rem; box-shadow: var(--shadow-lift);
+}
+.float-tag-1 { bottom: -1.5rem; left: -2rem; }
+.float-tag-2 { top: 1.5rem; right: -1.5rem; }
+ 
+.search-strip {
+  background: var(--linen);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 2rem;
+}
+.search-strip-inner { max-width: 720px; margin: 0 auto; }
+.search-strip-label {
+  text-align: center; font-family: var(--font-script);
+  font-size: 1.1rem; color: var(--terracotta);
+  margin-bottom: 0.75rem;
+}
+ 
+.feature-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; }
+.feat-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.75rem 1.25rem;
+  transition: all 0.25s var(--ease); box-shadow: var(--shadow-sm);
+}
+.feat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); border-color: var(--border-warm); }
+.feat-icon { font-size: 2rem; margin-bottom: 1rem; }
+.feat-title { font-family: var(--font-display); font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+.feat-text { font-size: 0.85rem; color: var(--walnut); line-height: 1.6; }
+ 
+.cta-band {
+  background: var(--forest);
+  padding: 5rem 2rem; text-align: center; position: relative; overflow: hidden;
+}
+.cta-band::before {
+  content: '🌾'; position: absolute; left: 3rem; top: 50%;
+  transform: translateY(-50%); font-size: 6rem; opacity: 0.08;
+}
+.cta-band::after {
+  content: '🌿'; position: absolute; right: 3rem; top: 50%;
+  transform: translateY(-50%); font-size: 6rem; opacity: 0.08;
+}
+ 
+@media(max-width:900px){ .hero{grid-template-columns:1fr;gap:2.5rem} .hero-visual{display:none} .feature-grid{grid-template-columns:repeat(2,1fr)} }
+@media(max-width:540px){ .feature-grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div id="nav-mount"></div>
+<div class="page-wrap">
+ 
+  <!-- HERO -->
+  <div style="background:linear-gradient(180deg, var(--cream) 0%, var(--parchment) 100%);">
+    <div class="hero">
+      <div class="anim-fadeup">
+        <div class="hero-eyebrow">🌿 Recipe Finder</div>
+        <h1 class="hero-h1">
+          Cook something<br><em>beautiful</em><br>tonight
+        </h1>
+        <p class="hero-sub">
+          Authentic Indian recipes from talented home cooks and professional chefs — searchable, saveable, and organised exactly how you like.
+        </p>
+        <div class="hero-ctas">
+          <a href="recipe_list.html"><button class="btn btn-terra btn-lg">🔍 Find Recipes</button></a>
+          <button class="btn btn-outline btn-lg" onclick="openModal('registerModal')">Join Free</button>
+        </div>
+        <div class="hero-nums">
+          <div><div class="hero-num-val">1,400+</div><div class="hero-num-lbl">Recipes</div></div>
+          <div style="width:1px;background:var(--border);"></div>
+          <div><div class="hero-num-val">80+</div><div class="hero-num-lbl">Chefs</div></div>
+          <div style="width:1px;background:var(--border);"></div>
+          <div><div class="hero-num-val">5K+</div><div class="hero-num-lbl">Members</div></div>
+          <div style="width:1px;background:var(--border);"></div>
+          <div><div class="hero-num-val">22</div><div class="hero-num-lbl">Cuisines</div></div>
+        </div>
+      </div>
+ 
+      <div class="hero-visual anim-fadeup d2">
+        <div class="hero-img-frame">
+          <img src="https://homecookingshow.in/wp-content/uploads/2025/03/veg-dum-briyani-819x1024.webp" alt="Indian food spread">
+        </div>
+        <div class="float-tag float-tag-1 anim-fadeup d3">
+          <div style="display:flex;align-items:center;gap:0.7rem;">
+            <span style="font-size:1.4rem;">🔥</span>
+            <div>
+              <div style="font-weight:700;font-size:0.82rem;color:var(--espresso);">Trending Today</div>
+              <div style="font-size:0.73rem;color:var(--dust);">Hyderabadi Dum Biryani</div>
+            </div>
+          </div>
+        </div>
+        <div class="float-tag float-tag-2 anim-fadeup d4">
+          <div style="font-size:1rem;color:#E8A020;margin-bottom:0.2rem;">★★★★★</div>
+          <div style="font-size:0.73rem;color:var(--dust);">4.9 · 1,300 reviews</div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- SEARCH STRIP -->
+  <div class="search-strip">
+    <div class="search-strip-inner">
+      <div class="search-strip-label">What are you craving?</div>
+      <div class="search-bar">
+        <input type="text" id="heroSearch" placeholder="Search recipes, ingredients, cuisine, chef...">
+        <button onclick="doSearch()">Search</button>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- CATEGORIES -->
+  <section class="section" style="background:white;">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:2.5rem;">
+        <div class="kicker">Browse by</div>
+        <h2 class="section-title">Category</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1rem;" id="catGrid"></div>
+    </div>
+  </section>
+ 
+  <!-- POPULAR -->
+  <section class="section" style="background:var(--cream);">
+    <div class="container">
+      <div class="flex-between mb-4" style="flex-wrap:wrap;gap:1rem;">
+        <div><div class="kicker">Community Favorites</div><h2 class="section-title" style="font-size:2.2rem;">Popular Recipes</h2></div>
+        <a href="recipe_list.html"><button class="btn btn-ghost">View All →</button></a>
+      </div>
+      <div class="grid-3" id="popularGrid"></div>
+    </div>
+  </section>
+ 
+  <!-- NEWEST -->
+  <section class="section" style="background:white;">
+    <div class="container">
+      <div class="flex-between mb-4" style="flex-wrap:wrap;gap:1rem;">
+        <div><div class="kicker">Just Added</div><h2 class="section-title" style="font-size:2.2rem;">Newest Recipes</h2></div>
+        <a href="recipe_list.html"><button class="btn btn-ghost">View All →</button></a>
+      </div>
+      <div class="grid-3" id="newestGrid"></div>
+    </div>
+  </section>
+ 
+  <!-- FEATURES -->
+  <section class="section" style="background:var(--linen);">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:2.5rem;">
+        <div class="kicker">Why FlavorFind?</div>
+        <h2 class="section-title">Everything a food lover needs</h2>
+      </div>
+      <div class="feature-grid">
+        <div class="feat-card"><div class="feat-icon">❤️</div><div class="feat-title">Save Favourites</div><div class="feat-text">Bookmark any recipe and find it instantly — no more browser tabs.</div></div>
+        <div class="feat-card"><div class="feat-icon">📚</div><div class="feat-title">Build Collections</div><div class="feat-text">Organise recipes into curated, shareable collections by theme.</div></div>
+        <div class="feat-card"><div class="feat-icon">👨‍🍳</div><div class="feat-title">Follow Chefs</div><div class="feat-text">Get notified the moment your favourite chefs post something new.</div></div>
+        <div class="feat-card"><div class="feat-icon">🌍</div><div class="feat-title">38 Cuisines</div><div class="feat-text">Explore dishes from every corner of the culinary world.</div></div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- CTA BAND -->
+  <div class="cta-band">
+    <div style="position:relative;z-index:1;">
+      <div class="kicker" style="justify-content:center;color:var(--sage-light);">Join the Community</div>
+      <h2 style="font-family:var(--font-display);font-size:clamp(1.8rem,3.5vw,2.8rem);color:white;font-weight:700;margin-bottom:0.75rem;letter-spacing:-0.02em;">Start your culinary journey today</h2>
+      <p style="color:rgba(255,255,255,0.65);max-width:420px;margin:0 auto 2rem;line-height:1.7;">Join 50,000 food lovers who discover and share extraordinary recipes every day.</p>
+      <button class="btn btn-terra btn-lg" onclick="openModal('registerModal')" style="background:white;color:var(--terracotta);">🌿 Join FlavorFind Free</button>
+    </div>
+  </div>
+ 
+  <div id="footer-mount"></div>
+</div>
+<div id="modals-mount"></div>
+ 
+<script src="app.js"></script>
+<script>
+  document.getElementById('nav-mount').innerHTML    = renderNavbar('home');
+  document.getElementById('footer-mount').innerHTML = renderFooter();
+  document.getElementById('modals-mount').innerHTML = authModalsHTML();
+  updateAuthUI();
+ 
+  const CATS=[
+    {icon:'🥞',name:'Breakfast'},{icon:'🥗',name:'Lunch'},
+    {icon:'🍝',name:'Dinner'},{icon:'🍰',name:'Dessert'},
+    {icon:'🥜',name:'Snacks'},{icon:'🍵',name:'Drinks'},
+    {icon:'🥦',name:'Vegetarian'},{icon:'🦐',name:'Seafood'}
+  ];
+  document.getElementById('catGrid').innerHTML = CATS.map(c=>{
+    const cnt = STATE.recipes.filter(r=>r.category===c.name).length;
+    return `<a href="recipe_list.html?cat=${c.name}" class="cat-card">
+      <div class="cat-icon">${c.icon}</div>
+      <div class="cat-name">${c.name}</div>
+      <div class="cat-count">${cnt} recipe${cnt!==1?'s':''}</div>
+    </a>`;
+  }).join('');
+ 
+  document.getElementById('popularGrid').innerHTML = [...STATE.recipes].sort((a,b)=>b.likes-a.likes).slice(0,3).map(r=>recipeCardHTML(r)).join('');
+  document.getElementById('newestGrid').innerHTML  = [...STATE.recipes].slice(-3).reverse().map(r=>recipeCardHTML(r)).join('');
+ 
+  function doSearch(){
+    const q=document.getElementById('heroSearch').value.trim();
+    location.href = q ? `recipe_list.html?q=${encodeURIComponent(q)}` : 'recipe_list.html';
+  }
+  document.getElementById('heroSearch').addEventListener('keydown',e=>{ if(e.key==='Enter') doSearch(); });
+</script>
+</body>
+</html>

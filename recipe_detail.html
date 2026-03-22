@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Recipe — FlavorFind</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.detail-grid { display:grid; grid-template-columns:300px 1fr; gap:3rem; max-width:1060px; margin:0 auto; padding:3rem 2rem; }
+.sidebar-sticky { position:sticky; top:calc(var(--nav-h)+1rem); }
+.sidebar-box { background:white; border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:1.25rem; box-shadow:var(--shadow-sm); }
+.back-bar { background:var(--cream); border-bottom:1px solid var(--border); padding:0.8rem 3rem; display:flex; align-items:center; gap:1rem; }
+@media(max-width:768px){ .detail-grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div id="nav-mount"></div>
+<div class="page-wrap">
+  <div id="content">
+    <div class="empty-state"><div class="empty-icon" style="animation:pulse 1.5s infinite;">🍳</div><div class="empty-title" style="color:var(--dust);">Loading…</div></div>
+  </div>
+  <div id="footer-mount"></div>
+</div>
+<div id="modals-mount"></div>
+<script src="app.js"></script>
+<script>
+  document.getElementById('nav-mount').innerHTML    = renderNavbar('recipes');
+  document.getElementById('footer-mount').innerHTML = renderFooter();
+  document.getElementById('modals-mount').innerHTML = authModalsHTML();
+  updateAuthUI();
+
+  const id=parseInt(new URLSearchParams(location.search).get('id'));
+  const r=STATE.recipes.find(x=>x.id===id);
+
+  if(!r){ document.getElementById('content').innerHTML=`<div class="empty-state"><div class="empty-icon">😕</div><div class="empty-title">Recipe not found</div><a href="recipe_list.html"><button class="btn btn-terra">Browse Recipes</button></a></div>`; }
+  else {
+    document.title=r.title+' — FlavorFind';
+    const liked=STATE.likedRecipes.has(r.id);
+    document.getElementById('content').innerHTML=`
+    <div class="recipe-hero">
+      <img src="${r.image}" alt="${r.title}">
+      <div class="recipe-hero-overlay">
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.75rem;">
+          <span class="chip chip-cat">${r.category}</span>${diffChip(r.difficulty)}
+          ${r.chef?'<span class="chip chip-chef">🌿 Verified Chef</span>':''}
+          ${r.tags.map(t=>`<span class="chip" style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.85);border:none;">${t}</span>`).join('')}
+        </div>
+        <h1 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,3rem);font-weight:700;color:white;line-height:1.1;letter-spacing:-0.02em;margin-bottom:0.85rem;">${r.title}</h1>
+        <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:0.5rem;color:rgba(255,255,255,0.85);font-size:0.9rem;">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--terracotta);color:white;font-weight:700;font-size:0.75rem;display:flex;align-items:center;justify-content:center;">${r.author[0]}</div>
+            ${r.author}
+          </div>
+          <span style="color:rgba(255,255,255,0.7);font-size:0.85rem;">❤ ${r.likes} likes</span>
+          <span style="color:rgba(255,255,255,0.7);font-size:0.85rem;">💬 ${r.comments} comments</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="back-bar">
+      <a href="recipe_list.html"><button class="btn btn-ghost btn-sm">← All Recipes</button></a>
+      <div style="margin-left:auto;display:flex;gap:0.6rem;">
+        <button class="btn ${liked?'btn-terra':'btn-outline'} btn-sm" id="likeBtn" onclick="likeDetail(${r.id})">${liked?'❤ Liked':'🤍 Like'}</button>
+        <button class="btn btn-forest btn-sm" onclick="addToCol(${r.id})" data-auth="yes" style="display:none;">+ Collect</button>
+      </div>
+    </div>
+
+    <div class="recipe-info-bar">
+      <div><div class="info-lbl">⏱ Cook Time</div><div class="info-val">${r.time} min</div></div>
+      <div><div class="info-lbl">🍽 Servings</div><div class="info-val">${r.servings}</div></div>
+      <div><div class="info-lbl">📊 Difficulty</div><div class="info-val">${r.difficulty}</div></div>
+      <div><div class="info-lbl">📂 Category</div><div class="info-val">${r.category}</div></div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="sidebar-sticky">
+        <div class="sidebar-box">
+          <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:600;margin-bottom:1rem;color:var(--espresso);">🧂 Ingredients</div>
+          ${r.ingredients.map((g,i)=>`
+          <div class="ing-row" id="ir${i}">
+            <div class="ing-check" id="ic${i}" onclick="ckIng(${i})"></div>
+            <span class="ing-qty">${g.qty}</span>
+            <span class="ing-name">${g.name}</span>
+          </div>`).join('')}
+          <p style="font-size:0.72rem;color:var(--dust);margin-top:0.75rem;">Tap to check off as you cook.</p>
+        </div>
+      </div>
+      <div>
+        <h2 style="font-family:var(--font-display);font-size:1.2rem;font-weight:600;margin-bottom:0.75rem;">About this dish</h2>
+        <p style="color:var(--bark);line-height:1.8;margin-bottom:2.5rem;font-size:0.97rem;">${r.description}</p>
+        <h2 style="font-family:var(--font-display);font-size:1.2rem;font-weight:600;margin-bottom:1.5rem;">👨‍🍳 Method</h2>
+        ${r.instructions.map((s,i)=>`<div class="ins-step"><div class="ins-num">${i+1}</div><div class="ins-text">${s}</div></div>`).join('')}
+        <div style="margin-top:3rem;padding:1.5rem;background:white;border:1px solid var(--border);border-radius:var(--radius);display:flex;gap:1rem;align-items:center;box-shadow:var(--shadow-sm);">
+          <div style="width:50px;height:50px;border-radius:50%;background:var(--terracotta);color:white;font-family:var(--font-display);font-size:1.3rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${r.author[0]}</div>
+          <div>
+            <div style="font-weight:600;margin-bottom:0.15rem;">${r.author} ${r.chef?'<span class="chip chip-chef" style="font-size:0.62rem;">🌿 Chef</span>':''}</div>
+            <div style="font-size:0.8rem;color:var(--dust);">Recipe author · ${r.likes} likes on this recipe</div>
+          </div>
+          <a href="profile.html" style="margin-left:auto;"><button class="btn btn-ghost btn-sm">View Profile</button></a>
+        </div>
+      </div>
+    </div>`;
+    updateAuthUI();
+  }
+
+  function ckIng(i){
+    document.getElementById('ic'+i).classList.toggle('done');
+    document.getElementById('ir'+i).classList.toggle('done');
+  }
+  function likeDetail(id){
+    if(!STATE.isLoggedIn){openModal('loginModal');return;}
+    const r=STATE.recipes.find(x=>x.id===id), btn=document.getElementById('likeBtn');
+    if(STATE.likedRecipes.has(id)){STATE.likedRecipes.delete(id);r.likes--;btn.className='btn btn-outline btn-sm';btn.innerHTML='🤍 Like';toast('Removed from favourites.','info');}
+    else{STATE.likedRecipes.add(id);r.likes++;btn.className='btn btn-terra btn-sm';btn.innerHTML='❤ Liked';toast('Added to favourites! ❤️','success');}
+  }
+  function addToCol(rid){
+    if(!STATE.isLoggedIn){openModal('loginModal');return;}
+    const c=STATE.userCollections[0];
+    if(c&&!c.recipeIds.includes(rid)){c.recipeIds.push(rid);toast(`Added to "${c.name}"!`,'success');}
+    else toast('Already in your collection!','info');
+  }
+</script>
+</body>
+</html>
